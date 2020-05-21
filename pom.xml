@@ -6,7 +6,13 @@
 
     <groupId>org.example</groupId>
     <artifactId>my-tools</artifactId>
+    <packaging>pom</packaging>
     <version>1.0.0</version>
+    <modules>
+        <module>my-tools-core</module>
+        <module>my-tools-web</module>
+        <module>my-tools-database-gen</module>
+    </modules>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
