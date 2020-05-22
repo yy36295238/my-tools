@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class TextUtils {
 
-    private static List<String> DANGER_PATHS = Arrays.asList(userHome(), "/");
+    private static final List<String> DANGER_PATHS = Arrays.asList(userHome(), "/");
 
     /**
      * 读取文件
