@@ -1,8 +1,11 @@
 package com.yyself.tool.utils;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -10,7 +13,10 @@ import java.util.stream.Collectors;
  * @Author yangyu
  * @create 2020/5/20 下午1:29
  */
+@Slf4j
 public class TextUtils {
+
+    private static List<String> DANGER_PATHS = Arrays.asList(userHome(), "/");
 
     /**
      * 读取文件
@@ -39,6 +45,10 @@ public class TextUtils {
      * 删除多级目录下的文件
      */
     public static void deleteDir(String dir) {
+        log.error("删除路径,{}", dir);
+        if (isDangerPath(dir)) {
+            throw new RuntimeException("不被允许执行," + dir);
+        }
         try {
             Files.walkFileTree(Paths.get(dir), new SimpleFileVisitor<Path>() {
                 @Override
@@ -56,6 +66,10 @@ public class TextUtils {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static boolean isDangerPath(String path) {
+        return DANGER_PATHS.contains(path);
     }
 
     /**
@@ -108,8 +122,19 @@ public class TextUtils {
         return path;
     }
 
+    private static String userHome() {
+        return System.getProperties().getProperty("user.home");
+    }
+
+    private static String userDir() {
+        return System.getProperties().getProperty("user.dir");
+    }
+
+    private static String dir(String name) {
+        return System.getProperties().getProperty(name);
+    }
+
     public static void main(String[] args) {
-        deleteDir("/Users/yangyu/tmp");
     }
 
 

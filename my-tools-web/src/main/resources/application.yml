@@ -1,7 +1,21 @@
+#这些配置会被保留，如果和下面的重复则会被覆盖
+spring:
+  profiles:
+    active: dev
 server:
   port: 7070
+---
+#当环境为dev时采用该配置
 spring:
-  datasource:
-    hikari:
-      auto-commit:
+  profiles: dev
 
+tools:
+  database:
+    genPath: /Users/yangyu/tmp/database
+---
+#当环境为pro时采用该配置
+spring:
+  profiles: pro
+tools:
+  database:
+    genPath: /root/tmp/database

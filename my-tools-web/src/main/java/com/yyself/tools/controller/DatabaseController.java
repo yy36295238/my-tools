@@ -6,6 +6,7 @@ import com.yyself.tools.database.DatabaseGenVo;
 import com.yyself.tools.database.make.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,7 +27,8 @@ import static com.yyself.tools.database.DatabaseHelper.*;
 @RequestMapping("/database")
 public class DatabaseController {
 
-    private static final String path = "/Users/yangyu/tmp/database";
+    @Value("${tools.database.genPath}")
+    private String path;
 
     @PostMapping("/gen")
     public ResponseResult gen(@RequestBody DatabaseGenVo vo) throws Exception {
