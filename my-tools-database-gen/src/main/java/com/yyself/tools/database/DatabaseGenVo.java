@@ -32,4 +32,6 @@ public class DatabaseGenVo {
     List<ColumnDefinition> columnDefinitionList;
     private List<ClassModel> classInfoList = new LinkedList<>();
     private String ddl;
+    private String[] ddlList;
+    private String zipName;
 }

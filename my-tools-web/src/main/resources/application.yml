@@ -11,7 +11,7 @@ spring:
 
 tools:
   database:
-    genPath: /Users/yangyu/tmp/database
+    genPath: /Users/yangyu/tmp/database/
 ---
 #当环境为pro时采用该配置
 spring:

@@ -45,14 +45,19 @@ public class TextUtils {
      * 删除多级目录下的文件
      */
     public static void deleteDir(String dir) {
-        log.error("删除路径,{}", dir);
+        log.warn("删除路径,{}", dir);
         if (isDangerPath(dir)) {
             throw new RuntimeException("不被允许执行," + dir);
+        }
+        if (!Files.exists(Paths.get(dir))) {
+            log.warn("路径不存在,{}", dir);
+            return;
         }
         try {
             Files.walkFileTree(Paths.get(dir), new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    log.warn("删除文件,{}", file.getFileName());
                     Files.delete(file);
                     return FileVisitResult.CONTINUE;
                 }
