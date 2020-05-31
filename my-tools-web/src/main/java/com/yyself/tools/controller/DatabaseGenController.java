@@ -36,7 +36,7 @@ import static com.yyself.tools.database.DatabaseHelper.*;
 @Slf4j
 @RestController
 @RequestMapping("/database")
-public class DatabaseController {
+public class DatabaseGenController {
 
     private static final String PREFIX_ZIP = "kot-gen-";
 

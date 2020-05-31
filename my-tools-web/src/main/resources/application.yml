@@ -11,11 +11,11 @@ spring:
 
 tools:
   database:
-    genPath: /Users/yangyu/tmp/database/
+    genPath: /Users/yangyu/tmp/kot-gen/
 ---
 #当环境为pro时采用该配置
 spring:
   profiles: pro
 tools:
   database:
-    genPath: /root/tmp/database
+    genPath: /root/tmp/kot-gen/
