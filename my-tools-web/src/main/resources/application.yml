@@ -3,7 +3,7 @@ spring:
   profiles:
     active: dev
 server:
-  port: 7070
+  port: 9999
 ---
 #当环境为dev时采用该配置
 spring:
