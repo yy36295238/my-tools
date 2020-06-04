@@ -5,6 +5,8 @@ PATH='/mydata/github-code/my-tools/'
 
 cd $PATH
 
+pwd
+
 git pull
 
 mvn clean package -Dmaven.test.skip=true
