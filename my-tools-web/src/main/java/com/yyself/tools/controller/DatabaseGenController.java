@@ -68,6 +68,8 @@ public class DatabaseGenController {
             new MakeServiceImpl(vo).make();
             new MakeController(vo).make();
 
+            // 生成vue文件
+            MakeVue.makeVue(vo);
         }
         // 打包文件
         vo.setZipName(zipName + ".zip");

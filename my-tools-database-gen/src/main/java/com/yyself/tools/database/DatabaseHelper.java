@@ -49,6 +49,9 @@ public class DatabaseHelper {
 
     public static String comment(ColumnDefinition columnDefinition) {
         List<String> columnSpecStrings = columnDefinition.getColumnSpecStrings();
+        if (!columnSpecStrings.contains("COMMENT")) {
+            return "";
+        }
         String comment = columnSpecStrings.get(columnSpecStrings.size() - 1);
         return ((comment == null || "NULL".equals(comment.toUpperCase())) ? "" : comment).replaceAll("`", "");
     }

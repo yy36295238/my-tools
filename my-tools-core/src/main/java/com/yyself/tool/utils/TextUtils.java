@@ -7,6 +7,7 @@ import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -28,6 +29,13 @@ public class TextUtils {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static String readText(String fileName) {
+        return String.join("", Objects.requireNonNull(read(fileName)));
+    }
+    public static String readHtml(String fileName) {
+        return String.join("\r", Objects.requireNonNull(read(fileName)));
     }
 
     /**
@@ -127,11 +135,11 @@ public class TextUtils {
         return path;
     }
 
-    private static String userHome() {
+    public static String userHome() {
         return System.getProperties().getProperty("user.home");
     }
 
-    private static String userDir() {
+    public static String userDir() {
         return System.getProperties().getProperty("user.dir");
     }
 
