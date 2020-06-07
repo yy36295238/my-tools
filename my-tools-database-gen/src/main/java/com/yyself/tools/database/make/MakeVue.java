@@ -35,7 +35,7 @@ public class MakeVue {
                 .replaceAll(API, "/api/v1/" + lowerName(vo.getTableName()));
         System.out.println(content);
 
-        vo.getClassInfoList().add(new ClassModel(vo.getClassName() + "Vue", content));
+        vo.getClassInfoList().add(new ClassModel(vo.getClassName() + "Vue", content, "vue"));
         TextUtils.write(genDemo, content);
     }
 

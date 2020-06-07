@@ -14,4 +14,10 @@ import lombok.NoArgsConstructor;
 public class ClassModel {
     private String className;
     private String classInfo;
+    private String lang;
+
+    public ClassModel(String className, String classInfo) {
+        this.className = className;
+        this.classInfo = classInfo;
+    }
 }

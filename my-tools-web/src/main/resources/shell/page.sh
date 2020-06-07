@@ -6,7 +6,7 @@ STATIC_PATH=/Users/yangyu/workspace/yyself/my-tools/my-tools-web/src/main/resour
 
 cd $WEB_TOOL_PATH
 
-npm run build
+npm run build:test
 
 cd $WEB_TOOL_DIST_PATH
 
