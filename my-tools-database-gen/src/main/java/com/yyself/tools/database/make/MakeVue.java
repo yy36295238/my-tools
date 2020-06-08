@@ -26,8 +26,16 @@ public class MakeVue {
 
         List<ColumnInfo> columnInfoList = vo.getColumnDefinitionList().stream().map(c -> new ColumnInfo(CommonUtils.camelCaseName(c.getColumnName().toLowerCase()), StringUtils.isBlank(comment(c)) ? c.getColumnName() : comment(c))).collect(Collectors.toList());
 
-        String templatePath = TextUtils.userDir() + "/template/curd-template.vue";
-        String genDemo = TextUtils.userDir() + "/template/gen-demo.vue";
+        String userDir = TextUtils.userDir().replace("target", "").replace("my-tools-web", "");
+//        String prePath = "";
+//        if (isDev()) {
+//            prePath = "/my-tools-web/src/main/resources/template";
+//        } else {
+//            prePath = "/my-tools-web/src/main/resources/template";
+//        }
+
+        String templatePath = userDir + "/my-tools-web/src/main/resources/template/curd-template.vue";
+        String genDemo = userDir + "/my-tools-web/src/main/resources/template/gen-demo.vue";
         String vueContent = TextUtils.readHtml(templatePath);
         String content = vueContent.replaceAll(ADD_FORM_DATA_KEY, addFormTemplate(columnInfoList))
                 .replaceAll(FORM_DATA_JSON, formDataJson(columnInfoList))
