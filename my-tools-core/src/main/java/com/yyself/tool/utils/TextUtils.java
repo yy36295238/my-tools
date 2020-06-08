@@ -34,6 +34,7 @@ public class TextUtils {
     public static String readText(String fileName) {
         return String.join("", Objects.requireNonNull(read(fileName)));
     }
+
     public static String readHtml(String fileName) {
         return String.join("\r", Objects.requireNonNull(read(fileName)));
     }
@@ -127,7 +128,7 @@ public class TextUtils {
     private String createTmpText(String fileName, String content) {
         String path = null;
         try {
-            path = Files.createTempFile("kot-agent", ".txt").toString();
+            path = Files.createTempFile(fileName, ".txt").toString();
             Files.write(Paths.get(path), content.getBytes());
         } catch (IOException e) {
             e.printStackTrace();
@@ -135,10 +136,17 @@ public class TextUtils {
         return path;
     }
 
+
+    /**
+     * /Users/yangyu
+     */
     public static String userHome() {
         return System.getProperties().getProperty("user.home");
     }
 
+    /**
+     * /Users/yangyu/workspace/yyself/my-tools
+     */
     public static String userDir() {
         return System.getProperties().getProperty("user.dir");
     }
@@ -148,7 +156,7 @@ public class TextUtils {
     }
 
     public static void main(String[] args) {
-        System.out.println(userDir());
+        System.out.println(userHome());
     }
 
 

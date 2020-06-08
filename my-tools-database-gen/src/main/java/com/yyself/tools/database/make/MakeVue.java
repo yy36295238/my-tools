@@ -26,15 +26,13 @@ public class MakeVue {
 
         List<ColumnInfo> columnInfoList = vo.getColumnDefinitionList().stream().map(c -> new ColumnInfo(CommonUtils.camelCaseName(c.getColumnName().toLowerCase()), StringUtils.isBlank(comment(c)) ? c.getColumnName() : comment(c))).collect(Collectors.toList());
 
-        String templatePath = TextUtils.userDir() + "/classes/template/curd-template.vue";
-        String genDemo = TextUtils.userDir() + "/classes/template/gen-demo.vue";
+        String templatePath = TextUtils.userDir() + "/template/curd-template.vue";
+        String genDemo = TextUtils.userDir() + "/template/gen-demo.vue";
         String vueContent = TextUtils.readHtml(templatePath);
         String content = vueContent.replaceAll(ADD_FORM_DATA_KEY, addFormTemplate(columnInfoList))
                 .replaceAll(FORM_DATA_JSON, formDataJson(columnInfoList))
                 .replaceAll(COLUMNS_DATA_JSON, columnsDataJson(columnInfoList))
                 .replaceAll(API, "/api/v1/" + lowerName(vo.getTableName()));
-        System.out.println(content);
-
         vo.getClassInfoList().add(new ClassModel(vo.getClassName() + "Vue", content, "vue"));
         TextUtils.write(genDemo, content);
     }
