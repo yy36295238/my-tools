@@ -27,12 +27,6 @@ public class MakeVue {
         List<ColumnInfo> columnInfoList = vo.getColumnDefinitionList().stream().map(c -> new ColumnInfo(CommonUtils.camelCaseName(c.getColumnName().toLowerCase()), StringUtils.isBlank(comment(c)) ? c.getColumnName() : comment(c))).collect(Collectors.toList());
 
         String userDir = TextUtils.userDir().replace("target", "").replace("my-tools-web", "");
-//        String prePath = "";
-//        if (isDev()) {
-//            prePath = "/my-tools-web/src/main/resources/template";
-//        } else {
-//            prePath = "/my-tools-web/src/main/resources/template";
-//        }
 
         String templatePath = userDir + "/my-tools-web/src/main/resources/template/curd-template.vue";
         String genDemo = userDir + "/my-tools-web/src/main/resources/template/gen-demo.vue";
