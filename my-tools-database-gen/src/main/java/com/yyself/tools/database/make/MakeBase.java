@@ -1,8 +1,8 @@
 package com.yyself.tools.database.make;
 
 import com.squareup.javapoet.JavaFile;
-import com.yyself.tools.database.ClassModel;
-import com.yyself.tools.database.DatabaseGenVo;
+import com.yyself.tools.database.vo.ClassModel;
+import com.yyself.tools.database.vo.DatabaseGenVo;
 
 import java.io.File;
 import java.io.IOException;

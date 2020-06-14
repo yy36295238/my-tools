@@ -1,4 +1,4 @@
-package com.yyself.tools.database;
+package com.yyself.tools.database.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

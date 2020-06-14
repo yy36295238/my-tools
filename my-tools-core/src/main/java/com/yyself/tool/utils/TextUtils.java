@@ -1,11 +1,14 @@
 package com.yyself.tool.utils;
 
+import lombok.Cleanup;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -18,6 +21,26 @@ import java.util.stream.Collectors;
 public class TextUtils {
 
     private static final List<String> DANGER_PATHS = Arrays.asList(userHome(), "/");
+
+    /**
+     * 读取文件
+     */
+    public static List<String> read(InputStream inputStream) {
+        try {
+            @Cleanup Reader reader = null;
+            List<String> lines = new LinkedList<>();
+            reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+            BufferedReader br = new BufferedReader(reader);
+            String line;
+            while ((line = br.readLine()) != null) {
+                lines.add(line);
+            }
+            return lines;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     /**
      * 读取文件

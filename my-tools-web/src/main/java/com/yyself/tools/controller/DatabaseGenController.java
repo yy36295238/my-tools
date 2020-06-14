@@ -3,25 +3,25 @@ package com.yyself.tools.controller;
 import com.yyself.tool.utils.ResponseResult;
 import com.yyself.tool.utils.TextUtils;
 import com.yyself.tool.utils.ZipUtils;
-import com.yyself.tools.database.DatabaseGenVo;
+import com.yyself.tools.database.DatabaseHelper;
 import com.yyself.tools.database.make.*;
+import com.yyself.tools.database.vo.ColumnInfo;
+import com.yyself.tools.database.vo.DatabaseGenVo;
+import com.yyself.tools.database.vo.TableInfo;
 import lombok.Cleanup;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jsqlparser.JSQLParserException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.yyself.tool.utils.CommonUtils.capitalName;
@@ -88,7 +88,7 @@ public class DatabaseGenController {
     }
 
     @PostMapping(value = "/download")
-    public void download(HttpServletResponse response, @RequestBody DatabaseGenVo vo) throws Exception {
+    public void download(HttpServletResponse response, @RequestBody DatabaseGenVo vo) {
 
         String zipName = path + vo.getZipName();
 
@@ -115,9 +115,27 @@ public class DatabaseGenController {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
         }
+    }
 
+
+    @PostMapping("/info")
+    public synchronized ResponseResult sql(@RequestParam("file") MultipartFile multipartFile) throws IOException {
+
+        List<TableInfo> tableInfos = new ArrayList<>();
+        List<String> tableDdls = tableDdl(TextUtils.read(multipartFile.getInputStream()));
+
+        for (String ddl : tableDdls) {
+            List<ColumnInfo> columnInfos = DatabaseHelper.columnList(ddl).stream().map(col -> ColumnInfo.builder()
+                    .name(removeQuota(col.getColumnName()))
+                    .type(col.getColDataType().getDataType())
+                    .length(columnLength(col))
+                    .comment(comment(col))
+                    .other(String.join(" ", other(col)))
+                    .build()).collect(Collectors.toList());
+            tableInfos.add(TableInfo.builder().tableName(tableName(ddl)).columnInfos(columnInfos).indexInfos(indexList(ddl)).build());
+        }
+        return ok(tableInfos);
 
     }
 

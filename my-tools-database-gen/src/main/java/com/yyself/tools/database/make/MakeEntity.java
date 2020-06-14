@@ -2,7 +2,7 @@ package com.yyself.tools.database.make;
 
 import com.squareup.javapoet.*;
 import com.yyself.tool.utils.CommonUtils;
-import com.yyself.tools.database.DatabaseGenVo;
+import com.yyself.tools.database.vo.DatabaseGenVo;
 import io.swagger.annotations.ApiModelProperty;
 import kot.bootstarter.kotmybatis.annotation.Column;
 import kot.bootstarter.kotmybatis.annotation.ID;

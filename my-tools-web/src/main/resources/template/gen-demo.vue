@@ -5,20 +5,20 @@
        </FormItem>
      </Col>
 	<Col span="12">
-      <FormItem label="作者姓名" label-position="top">
-           <Input v-model="formData.name" placeholder="作者姓名" />
+      <FormItem label="'作者姓名'" label-position="top">
+           <Input v-model="formData.name" placeholder="'作者姓名'" />
        </FormItem>
      </Col>
 </Row>
 <Row :gutter="20">
 	<Col span="12">
-      <FormItem label="创建日期" label-position="top">
-           <Input v-model="formData.createTime" placeholder="创建日期" />
+      <FormItem label="'创建日期'" label-position="top">
+           <Input v-model="formData.createTime" placeholder="'创建日期'" />
        </FormItem>
      </Col>
 	<Col span="12">
-      <FormItem label="修改日期" label-position="top">
-           <Input v-model="formData.updateTime" placeholder="修改日期" />
+      <FormItem label="'修改日期'" label-position="top">
+           <Input v-model="formData.updateTime" placeholder="'修改日期'" />
        </FormItem>
      </Col>
 </Row>
@@ -32,15 +32,15 @@
 					key: "id",
 				},
 				{
-					title: "作者姓名",
+					title: "'作者姓名'",
 					key: "name",
 				},
 				{
-					title: "创建日期",
+					title: "'创建日期'",
 					key: "createTime",
 				},
 				{
-					title: "修改日期",
+					title: "'修改日期'",
 					key: "updateTime",
 				},
             ]        }    }};</script>

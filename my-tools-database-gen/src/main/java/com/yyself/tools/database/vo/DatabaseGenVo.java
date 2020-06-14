@@ -1,4 +1,4 @@
-package com.yyself.tools.database;
+package com.yyself.tools.database.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,8 +10,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * @Author yangyu
- * @create 2020/5/20 上午10:32
+ * @author yangyu
+ * @date 2020/5/20 上午10:32
  */
 
 @Data

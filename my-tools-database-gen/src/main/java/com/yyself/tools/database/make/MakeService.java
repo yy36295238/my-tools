@@ -4,7 +4,7 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeSpec;
-import com.yyself.tools.database.DatabaseGenVo;
+import com.yyself.tools.database.vo.DatabaseGenVo;
 
 import javax.lang.model.element.Modifier;
 import java.io.IOException;

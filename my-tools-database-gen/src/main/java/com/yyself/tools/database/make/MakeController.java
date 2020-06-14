@@ -2,7 +2,7 @@ package com.yyself.tools.database.make;
 
 import com.squareup.javapoet.*;
 import com.yyself.tool.utils.ResponseResult;
-import com.yyself.tools.database.DatabaseGenVo;
+import com.yyself.tools.database.vo.DatabaseGenVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;

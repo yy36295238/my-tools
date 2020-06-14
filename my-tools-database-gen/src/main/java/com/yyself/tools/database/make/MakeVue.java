@@ -3,9 +3,9 @@ package com.yyself.tools.database.make;
 import com.google.common.collect.Lists;
 import com.yyself.tool.utils.CommonUtils;
 import com.yyself.tool.utils.TextUtils;
-import com.yyself.tools.database.ClassModel;
-import com.yyself.tools.database.ColumnInfo;
-import com.yyself.tools.database.DatabaseGenVo;
+import com.yyself.tools.database.vo.ClassModel;
+import com.yyself.tools.database.vo.ColumnInfo;
+import com.yyself.tools.database.vo.DatabaseGenVo;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
@@ -24,7 +24,7 @@ public class MakeVue {
 
     public static void makeVue(DatabaseGenVo vo) {
 
-        List<ColumnInfo> columnInfoList = vo.getColumnDefinitionList().stream().map(c -> new ColumnInfo(CommonUtils.camelCaseName(c.getColumnName().toLowerCase()), StringUtils.isBlank(comment(c)) ? c.getColumnName() : comment(c))).collect(Collectors.toList());
+        List<ColumnInfo> columnInfoList = vo.getColumnDefinitionList().stream().map(c -> ColumnInfo.builder().name(CommonUtils.camelCaseName(c.getColumnName().toLowerCase())).comment(StringUtils.isBlank(comment(c)) ? c.getColumnName() : comment(c)).build()).collect(Collectors.toList());
 
         String userDir = TextUtils.userDir().replace("target", "").replace("my-tools-web", "");
 
