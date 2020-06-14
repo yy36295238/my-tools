@@ -64,10 +64,10 @@ public class CommonUtils {
         if ("DATE".equals(type) || "DATETIME".equals(type) || "TIMESTAMP".equals(type) || type.contains("TIMESTAMP")) {
             return Date.class;
         }
-        if ("TINYINT".equals(type) || "SMALLINT".equals(type) || "INT".equals(type) || "SMALLINT UNSIGNED".equals(type)) {
+        if ("TINYINT".equals(type) || "SMALLINT".equals(type) || "INT".equals(type) || "INT4".equals(type) || "SMALLINT UNSIGNED".equals(type)) {
             return Integer.class;
         }
-        if ("BIGINT".equals(type) || "BIGINT UNSIGNED".equals(type)) {
+        if ("BIGINT".equals(type) || "BIGINT UNSIGNED".equals(type) || "INT8".equals(type)) {
             return Long.class;
         }
         if ("FLOAT".equals(type)) {

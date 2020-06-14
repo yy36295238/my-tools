@@ -27,7 +27,7 @@ public class DatabaseHelper {
 
 
     public static String formatSql(String sql) {
-        return sql.replaceAll("USING BTREE", "");
+        return sql.replaceAll("USING BTREE", "").replaceAll("comment", COMMENT);
     }
 
     public static String removeQuota(String str) {
@@ -51,7 +51,8 @@ public class DatabaseHelper {
     }
 
     public static List<Index> indexes(String sql) {
-        return createTable(sql).getIndexes();
+        List<Index> indexes = createTable(sql).getIndexes();
+        return CollectionUtils.isEmpty(indexes) ? Lists.newArrayList() : indexes;
     }
 
     public static List<IndexInfo> indexList(String sql) {
@@ -116,7 +117,7 @@ public class DatabaseHelper {
             if (isSkip(line) || skip) {
                 continue;
             }
-            if (line.startsWith("CREATE TABLE")) {
+            if (isCreateTable(line)) {
                 if (!isFirstTable) {
                     tables.add(tableBuilder.toString());
                     tableBuilder = new StringBuilder();
@@ -126,8 +127,15 @@ public class DatabaseHelper {
             }
             tableBuilder.append(line);
         }
+        if (tables.isEmpty()) {
+            tables.add(tableBuilder.toString());
+        }
         return tables;
 
+    }
+
+    public static boolean isCreateTable(String line) {
+        return line.startsWith("CREATE TABLE") || line.startsWith("create table");
     }
 
     public static boolean isNoteStart(String line) {
