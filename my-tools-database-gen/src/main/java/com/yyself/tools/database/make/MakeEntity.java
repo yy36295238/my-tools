@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 import javax.lang.model.element.Modifier;
 
 import static com.yyself.tools.database.DatabaseHelper.comment;
+import static com.yyself.tools.database.DatabaseHelper.primaryKey;
 
 
 /**
@@ -36,6 +37,7 @@ public class MakeEntity extends MakeBase {
             String columnName = c.getColumnName();
             String dataType = c.getColDataType().getDataType();
             String comment = comment(c);
+            boolean isPk = c.getColumnName().equals(vo.getPrimaryKey());
             final FieldSpec.Builder fieldBuilder = FieldSpec.builder(CommonUtils.changeType(dataType), CommonUtils.camelCaseName(columnName.toLowerCase()), Modifier.PRIVATE)
                     .addJavadoc(comment + "\n");
 
@@ -46,8 +48,8 @@ public class MakeEntity extends MakeBase {
                         .addMember("name", "$S", CommonUtils.camelCaseName(columnName.toLowerCase()))
                         .build());
             }
-            if (vo.isOpenKotMybatis()) {
-                fieldBuilder.addAnnotation(AnnotationSpec.builder(Column.class).addMember("value", "$S", columnName).build());
+            fieldBuilder.addAnnotation(AnnotationSpec.builder(Column.class).addMember("value", "$S", columnName).build());
+            if (isPk) {
                 fieldBuilder.addAnnotation(AnnotationSpec.builder(ID.class).addMember("value", "$S", columnName).build());
             }
             classBuilder.addField(fieldBuilder.build());

@@ -59,7 +59,6 @@ public class DatabaseGenController {
             vo.setClassName(capitalTableName);
             vo.setFilePath(path);
             vo.setPrimaryKey(primaryKey(vo.getDdl()));
-            vo.setOpenKotMybatis(true);
             vo.setColumnDefinitionList(columnList(vo.getDdl()).stream().peek(c -> c.setColumnName(removeQuota(c.getColumnName()))).collect(Collectors.toList()));
 
             new MakeEntity(vo).make();

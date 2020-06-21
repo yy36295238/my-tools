@@ -27,7 +27,6 @@ public class DatabaseGenVo {
     private String prefix;
     private String filePath;
     private String primaryKey;
-    private boolean openKotMybatis = true;
     private boolean enableSwagger = true;
     List<ColumnDefinition> columnDefinitionList;
     private List<ClassModel> classInfoList = new LinkedList<>();
