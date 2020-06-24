@@ -35,7 +35,7 @@ public class MakeVue {
                 .replaceAll(FORM_DATA_JSON, formDataJson(columnInfoList))
                 .replaceAll(COLUMNS_DATA_JSON, columnsDataJson(columnInfoList))
                 .replaceAll(API, "/api/v1/" + lowerName(vo.getTableName()));
-        vo.getClassInfoList().add(new ClassModel(vo.getClassName() + "Vue", content, "vue"));
+        vo.getClassInfoList().add(ClassModel.builder().tableName(vo.getTableName()).className(vo.getClassName() + "Vue").classInfo(content).lang("vue").build());
         TextUtils.write(genDemo, content);
     }
 

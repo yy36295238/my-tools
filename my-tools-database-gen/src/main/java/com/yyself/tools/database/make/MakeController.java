@@ -2,6 +2,8 @@ package com.yyself.tools.database.make;
 
 import com.squareup.javapoet.*;
 import com.yyself.tool.utils.ResponseResult;
+import com.yyself.tools.database.enums.MakeTypeEnum;
+import com.yyself.tools.database.vo.ClassModel;
 import com.yyself.tools.database.vo.DatabaseGenVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -21,7 +23,7 @@ import static com.yyself.tool.utils.CommonUtils.lowerName;
  * @author yangyu
  */
 
-public class MakeController extends MakeBase {
+public class MakeController extends AbstractMake {
 
     private static final String PREFIX = "I";
 
@@ -30,7 +32,7 @@ public class MakeController extends MakeBase {
     }
 
     @Override
-    public JavaFile makeClass() {
+    public ClassModel makeClass() {
         String currentClassName = vo.getTableName() + "Controller";
         ClassName service = ClassName.get(vo.getPackages() + ".service", PREFIX + vo.getTableName() + "Service");
         ClassName entity = ClassName.get(vo.getPackages() + ".entity", vo.getTableName());
@@ -61,7 +63,10 @@ public class MakeController extends MakeBase {
             typeSpec.addAnnotation(AnnotationSpec.builder(Api.class).addMember("tags", "$S", vo.getTableName() + "管理").build());
         }
 
-        return JavaFile.builder(vo.getPackages() + ".controller", typeSpec.build()).build();
+        return ClassModel.builder()
+                .javaFile(JavaFile.builder(vo.getPackages() + ".controller", typeSpec.build()).build())
+                .classType(MakeTypeEnum.CONTROLLER.name())
+                .build();
     }
 
     private MethodSpec add(ClassName entity, String tableName, String serviceName) {

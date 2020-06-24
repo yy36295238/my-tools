@@ -1,14 +1,15 @@
 package com.yyself.tools.controller;
 
+import com.yyself.tool.utils.FileUtils;
 import com.yyself.tool.utils.ResponseResult;
 import com.yyself.tool.utils.TextUtils;
 import com.yyself.tool.utils.ZipUtils;
 import com.yyself.tools.database.DatabaseHelper;
 import com.yyself.tools.database.make.*;
+import com.yyself.tools.database.vo.ClassModel;
 import com.yyself.tools.database.vo.ColumnInfo;
 import com.yyself.tools.database.vo.DatabaseGenVo;
 import com.yyself.tools.database.vo.TableInfo;
-import lombok.Cleanup;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jsqlparser.JSQLParserException;
 import org.apache.commons.lang3.StringUtils;
@@ -17,11 +18,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.yyself.tool.utils.CommonUtils.capitalName;
@@ -70,6 +73,10 @@ public class DatabaseGenController {
             // 生成vue文件
             MakeVue.makeVue(vo);
         }
+
+        Map<String, List<ClassModel>> classModelMap = vo.getClassInfoList().stream().collect(Collectors.groupingBy(ClassModel::getTableName, LinkedHashMap::new, Collectors.toList()));
+        vo.setClassModelMap(classModelMap);
+
         // 打包文件
         vo.setZipName(zipName + ".zip");
         ZipUtils.compress(path + zipName, path, vo.getZipName());
@@ -88,33 +95,7 @@ public class DatabaseGenController {
 
     @PostMapping(value = "/download")
     public void download(HttpServletResponse response, @RequestBody DatabaseGenVo vo) {
-
-        String zipName = path + vo.getZipName();
-
-        //设置文件路径
-        File file = new File(zipName);
-        if (file.exists()) {
-            response.setHeader("content-type", "application/octet-stream");
-            response.setContentType("application/octet-stream");
-            response.setHeader("Content-Disposition", "attachment;filename=" + vo.getZipName());
-            response.addHeader("file-name", vo.getZipName());
-            //  自定义响应头信息
-            response.addHeader("Access-Control-Expose-Headers", "Content-Disposition");
-            response.addHeader("Access-Control-Expose-Headers", "file-name");
-            byte[] buffer = new byte[1024];
-            try {
-                @Cleanup FileInputStream fis = new FileInputStream(file);
-                @Cleanup BufferedInputStream bis = new BufferedInputStream(fis);
-                OutputStream os = response.getOutputStream();
-                int i = bis.read(buffer);
-                while (i != -1) {
-                    os.write(buffer, 0, i);
-                    i = bis.read(buffer);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        FileUtils.download(path + vo.getZipName(), vo.getZipName(), response);
     }
 
 

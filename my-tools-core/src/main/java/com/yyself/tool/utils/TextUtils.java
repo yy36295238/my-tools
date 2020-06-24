@@ -1,5 +1,6 @@
 package com.yyself.tool.utils;
 
+import com.yyself.tool.exception.KotException;
 import lombok.Cleanup;
 import lombok.extern.slf4j.Slf4j;
 
@@ -10,11 +11,10 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * @Author yangyu
+ * @author yangyu
  * @create 2020/5/20 下午1:29
  */
 @Slf4j
@@ -27,19 +27,17 @@ public class TextUtils {
      */
     public static List<String> read(InputStream inputStream) {
         try {
-            @Cleanup Reader reader = null;
             List<String> lines = new LinkedList<>();
-            reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
-            BufferedReader br = new BufferedReader(reader);
+            @Cleanup Reader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+            @Cleanup BufferedReader br = new BufferedReader(reader);
             String line;
             while ((line = br.readLine()) != null) {
                 lines.add(line);
             }
             return lines;
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new KotException(e);
         }
-        return null;
     }
 
     /**
@@ -49,17 +47,16 @@ public class TextUtils {
         try {
             return Files.lines(Paths.get(fileName)).collect(Collectors.toList());
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new KotException(e);
         }
-        return null;
     }
 
     public static String readText(String fileName) {
-        return String.join("", Objects.requireNonNull(read(fileName)));
+        return String.join("", read(fileName));
     }
 
     public static String readHtml(String fileName) {
-        return String.join("\r", Objects.requireNonNull(read(fileName)));
+        return String.join("\r", read(fileName));
     }
 
     /**
@@ -69,7 +66,7 @@ public class TextUtils {
         try {
             Files.delete(Paths.get(path));
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new KotException(e);
         }
     }
 
@@ -101,7 +98,7 @@ public class TextUtils {
                 }
             });
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new KotException(e);
         }
     }
 
@@ -141,7 +138,7 @@ public class TextUtils {
                 Files.createFile(path);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new KotException(e);
         }
     }
 

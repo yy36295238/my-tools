@@ -1,8 +1,12 @@
 package com.yyself.tools.database.vo;
 
+import com.squareup.javapoet.JavaFile;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 /**
  * @Author yangyu
@@ -11,13 +15,21 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class ClassModel {
+    private String tableName;
     private String className;
     private String classInfo;
     private String lang;
+    private String classType;
+    private JavaFile javaFile;
+    private List<ClassModel> classModelList;
 
-    public ClassModel(String className, String classInfo) {
+    public ClassModel(String className, String classInfo, String lang) {
         this.className = className;
         this.classInfo = classInfo;
+        this.lang = lang;
     }
+
+
 }

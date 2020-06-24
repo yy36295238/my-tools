@@ -8,6 +8,7 @@ import net.sf.jsqlparser.statement.create.table.ColumnDefinition;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author yangyu
@@ -30,6 +31,7 @@ public class DatabaseGenVo {
     private boolean enableSwagger = true;
     List<ColumnDefinition> columnDefinitionList;
     private List<ClassModel> classInfoList = new LinkedList<>();
+    Map<String, List<ClassModel>> classModelMap;
     private String ddl;
     private String[] ddlList;
     private String zipName;

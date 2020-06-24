@@ -4,6 +4,8 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeSpec;
+import com.yyself.tools.database.enums.MakeTypeEnum;
+import com.yyself.tools.database.vo.ClassModel;
 import com.yyself.tools.database.vo.DatabaseGenVo;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +16,7 @@ import java.io.IOException;
  * @author yangyu
  */
 
-public class MakeServiceImpl extends MakeBase {
+public class MakeServiceImpl extends AbstractMake {
 
     private static final String PREFIX = "I";
 
@@ -23,7 +25,7 @@ public class MakeServiceImpl extends MakeBase {
     }
 
     @Override
-    public JavaFile makeClass() throws IOException {
+    public ClassModel makeClass() throws IOException {
         //泛型 BaseMapper<user>
         ClassName managerService = ClassName.get("kot.bootstarter.kotmybatis.service.impl", "MapperManagerServiceImpl");
         ClassName service = ClassName.bestGuess(vo.getPackages() + ".service." + PREFIX + vo.getTableName() + "Service");
@@ -36,7 +38,10 @@ public class MakeServiceImpl extends MakeBase {
                 .addSuperinterface(service)
                 .superclass(ParameterizedTypeName.get(managerService, entity));
 
-        return JavaFile.builder(vo.getPackages() + ".service.impl", serviceClassBuilder.build()).build();
+        return ClassModel.builder()
+                .javaFile(JavaFile.builder(vo.getPackages() + ".service.impl", serviceClassBuilder.build()).build())
+                .classType(MakeTypeEnum.SERVICE.name())
+                .build();
     }
 
 }

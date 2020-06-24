@@ -2,6 +2,8 @@ package com.yyself.tools.database.make;
 
 import com.squareup.javapoet.*;
 import com.yyself.tool.utils.CommonUtils;
+import com.yyself.tools.database.enums.MakeTypeEnum;
+import com.yyself.tools.database.vo.ClassModel;
 import com.yyself.tools.database.vo.DatabaseGenVo;
 import io.swagger.annotations.ApiModelProperty;
 import kot.bootstarter.kotmybatis.annotation.Column;
@@ -14,14 +16,13 @@ import lombok.NoArgsConstructor;
 import javax.lang.model.element.Modifier;
 
 import static com.yyself.tools.database.DatabaseHelper.comment;
-import static com.yyself.tools.database.DatabaseHelper.primaryKey;
 
 
 /**
  * @author yangyu
  */
 
-public class MakeEntity extends MakeBase {
+public class MakeEntity extends AbstractMake {
 
 
     public MakeEntity(DatabaseGenVo vo) {
@@ -29,7 +30,7 @@ public class MakeEntity extends MakeBase {
     }
 
     @Override
-    public JavaFile makeClass() {
+    public ClassModel makeClass() {
 
         TypeSpec.Builder classBuilder = TypeSpec.classBuilder(vo.getClassName());
 
@@ -56,7 +57,6 @@ public class MakeEntity extends MakeBase {
 
         });
 
-
         // 公共方法
         classBuilder.addModifiers(Modifier.PUBLIC)
                 // 添加类注解
@@ -69,7 +69,11 @@ public class MakeEntity extends MakeBase {
                         .addMember("value", "$S", vo.getRealTableName())
                         .build())
                 .addJavadoc("@author " + vo.getAuthor() + "\n");
-        return JavaFile.builder(vo.getPackages() + ".entity", classBuilder.build()).build();
+
+        return ClassModel.builder()
+                .javaFile(JavaFile.builder(vo.getPackages() + ".entity", classBuilder.build()).build())
+                .classType(MakeTypeEnum.ENTITY.name())
+                .build();
 
     }
 
