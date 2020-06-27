@@ -1,16 +1,17 @@
 package com.yyself.tools.database.dialect;
 
 import com.alibaba.druid.sql.SQLUtils;
+import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
 import com.alibaba.druid.sql.ast.statement.*;
 import com.alibaba.druid.util.JdbcConstants;
-import com.yyself.tool.utils.JacksonUtils;
 import com.yyself.tools.database.vo.ColumnInfo;
 import com.yyself.tools.database.vo.CommentInfo;
 import com.yyself.tools.database.vo.IndexInfo;
 import com.yyself.tools.database.vo.TableInfo;
+import kot.bootstarter.kotmybatis.utils.KotBeanUtils;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.StringUtils;
@@ -31,6 +32,8 @@ import static java.util.stream.Collectors.toMap;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class PostgreSqlHandler extends BaseSqlHandler {
+    private static final String COMMENT_TABLE = "TABLE";
+    private static final String COMMENT_COLUMN = "COLUMN";
 
     @Override
     public List<TableInfo> tableInfos() {
@@ -113,8 +116,11 @@ public class PostgreSqlHandler extends BaseSqlHandler {
                 SQLConstraint constraint = sqlAlterTableAddConstraint.getConstraint();
                 if (constraint instanceof SQLPrimaryKeyImpl) {
                     SQLPrimaryKeyImpl primaryKey = (SQLPrimaryKeyImpl) constraint;
+                    SQLExpr expr = alterTableStatement.getTableSource().getExpr();
+                    String tableName = convertString(KotBeanUtils.getFieldVal("name", expr));
+
                     IndexInfo indexInfo = IndexInfo.builder()
-                            .tableName(BaseSqlHandler.removeQuota(((SQLPropertyExpr) alterTableStatement.getTableSource().getExpr()).getName()))
+                            .tableName(removeQuota(tableName))
                             .key(removeQuota(primaryKey.getName().getSimpleName()))
                             .type(PRIMARY_KEY)
                             .indexes(primaryKey.getColumns().stream().map(item -> removeQuota(item.getExpr().toString())).collect(Collectors.joining(COMMA)))
@@ -122,8 +128,12 @@ public class PostgreSqlHandler extends BaseSqlHandler {
                     indexInfos.add(indexInfo);
                 } else if (constraint instanceof SQLUnique) {
                     SQLUnique sqlUnique = (SQLUnique) constraint;
+                    SQLExpr expr = alterTableStatement.getTableSource().getExpr();
+
+                    String tableName = convertString(KotBeanUtils.getFieldVal("name", expr));
+
                     IndexInfo indexInfo = IndexInfo.builder()
-                            .tableName(BaseSqlHandler.removeQuota(((SQLPropertyExpr) alterTableStatement.getTableSource().getExpr()).getName()))
+                            .tableName(tableName)
                             .key(removeQuota(sqlUnique.getName().getSimpleName()))
                             .type(UNIQUE)
                             .indexes(sqlUnique.getColumns().stream().map(item -> removeQuota(item.getExpr().toString())).collect(Collectors.joining(COMMA)))
@@ -156,23 +166,59 @@ public class PostgreSqlHandler extends BaseSqlHandler {
             // 备注
             if (sqlStatement instanceof SQLCommentStatement) {
                 SQLCommentStatement commentStatement = (SQLCommentStatement) sqlStatement;
-                SQLPropertyExpr expr = (SQLPropertyExpr) commentStatement.getOn().getExpr();
-                CommentInfo.CommentInfoBuilder builder = CommentInfo.builder()
-                        .columnName(removeQuota(expr.getName()))
+                SQLExpr expr = commentStatement.getOn().getExpr();
+                CommentInfo commentInfo = CommentInfo.builder()
                         .type(commentStatement.getType().name())
-                        .comment(removeQuota(commentStatement.getComment().toString()));
+                        .comment(removeQuota(commentStatement.getComment().toString()))
+                        .build();
+
+                // 表备注
+                if (expr instanceof SQLIdentifierExpr && COMMENT_TABLE.equals(commentInfo.getType())) {
+                    SQLIdentifierExpr identifierExpr = (SQLIdentifierExpr) expr;
+                    String tableName = removeQuota(identifierExpr.getName());
+                    commentInfo.setTableName(tableName);
+                    commentInfo.setColumnName(tableName);
+                    commentInfos.add(commentInfo);
+                    continue;
+                }
+
+                // 表备注
+                if (expr instanceof SQLPropertyExpr && COMMENT_TABLE.equals(commentInfo.getType())) {
+                    SQLPropertyExpr sqlPropertyExpr = (SQLPropertyExpr) expr;
+                    SQLExpr exprOwner = sqlPropertyExpr.getOwner();
+                    if (exprOwner instanceof SQLIdentifierExpr) {
+                        System.err.println("comment TABLE");
+                        String tableName = removeQuota(sqlPropertyExpr.getName());
+                        commentInfo.setTableName(tableName);
+                        commentInfo.setColumnName(tableName);
+                        commentInfos.add(commentInfo);
+                        continue;
+                    }
+                }
 
                 // 字段备注
-                if (expr.getOwner() instanceof SQLPropertyExpr) {
-                    SQLPropertyExpr owner = (SQLPropertyExpr) expr.getOwner();
-                    builder.tableName(removeQuota(owner.getName()));
-                }
-                // 表备注
-                if (expr.getOwner() instanceof SQLIdentifierExpr) {
-                    builder.tableName(removeQuota(expr.getName()));
+                if (expr instanceof SQLPropertyExpr && COMMENT_COLUMN.equals(commentInfo.getType())) {
+                    SQLPropertyExpr sqlPropertyExpr = (SQLPropertyExpr) expr;
+                    commentInfo.setColumnName(removeQuota(sqlPropertyExpr.getName()));
+
+                    SQLExpr exprOwner = sqlPropertyExpr.getOwner();
+
+                    // 设置表名
+                    if (exprOwner instanceof SQLPropertyExpr) {
+                        SQLPropertyExpr ownerPropertyExpr = (SQLPropertyExpr) exprOwner;
+                        commentInfo.setTableName(removeQuota((ownerPropertyExpr.getName())));
+                    }
+
+                    // 设置表名
+                    if (exprOwner instanceof SQLIdentifierExpr) {
+                        System.err.println("comment COLUMN");
+                        SQLIdentifierExpr identifierExpr = (SQLIdentifierExpr) exprOwner;
+                        commentInfo.setTableName(removeQuota(identifierExpr.getName()));
+                    }
                 }
 
-                commentInfos.add(builder.build());
+
+                commentInfos.add(commentInfo);
             }
         }
         return commentInfos.stream().collect(toMap(c -> c.getTableName() + DOT + c.getColumnName(), CommentInfo::getComment));
