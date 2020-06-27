@@ -19,7 +19,9 @@ import java.util.List;
 public class TableInfo {
 
     private String tableName;
+    private String tableDesc;
     private List<ColumnInfo> columnInfos;
     private List<IndexInfo> indexInfos;
+    private String primaryKey;
 
 }

@@ -3,6 +3,7 @@ package com.yyself.tool.utils;
 
 import com.yyself.tool.common.ResultEnum;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,10 +14,12 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class ResponseResult {
 
     private Integer code;
     private String message;
+    private String detailMsg;
     private Object data;
     private Long cost;
 
@@ -34,7 +37,7 @@ public class ResponseResult {
     }
 
     public static ResponseResult err(ResultEnum resultEnum, String msg) {
-        return new ResponseResult(resultEnum.code, resultEnum.message + msg);
+        return ResponseResult.builder().code(resultEnum.code).message(resultEnum.message).detailMsg(msg).build();
     }
 
     public ResponseResult success(Object data) {

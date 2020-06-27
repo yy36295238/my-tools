@@ -1,17 +1,19 @@
 package com.yyself.tools.controller;
 
+import com.alibaba.druid.util.JdbcConstants;
+import com.yyself.tool.exception.KotException;
 import com.yyself.tool.utils.FileUtils;
 import com.yyself.tool.utils.ResponseResult;
 import com.yyself.tool.utils.TextUtils;
 import com.yyself.tool.utils.ZipUtils;
-import com.yyself.tools.database.DatabaseHelper;
+import com.yyself.tools.database.dialect.BaseSqlHandler;
+import com.yyself.tools.database.dialect.MySqlHandler;
+import com.yyself.tools.database.dialect.PostgreSqlHandler;
 import com.yyself.tools.database.make.*;
 import com.yyself.tools.database.vo.ClassModel;
-import com.yyself.tools.database.vo.ColumnInfo;
 import com.yyself.tools.database.vo.DatabaseGenVo;
 import com.yyself.tools.database.vo.TableInfo;
 import lombok.extern.slf4j.Slf4j;
-import net.sf.jsqlparser.JSQLParserException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +23,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +30,6 @@ import java.util.stream.Collectors;
 
 import static com.yyself.tool.utils.CommonUtils.capitalName;
 import static com.yyself.tool.utils.ResponseResult.ok;
-import static com.yyself.tools.database.DatabaseHelper.*;
 
 /**
  * @Author yangyu
@@ -46,23 +46,32 @@ public class DatabaseGenController {
     @Value("${tools.database.genPath}")
     private java.lang.String path;
 
+    public BaseSqlHandler sqlHandler(String dialect) {
+        if (JdbcConstants.MYSQL.equals(dialect)) {
+            return new MySqlHandler();
+        }
+        if (JdbcConstants.POSTGRESQL.equals(dialect)) {
+            return new PostgreSqlHandler();
+        }
+        throw new KotException("不支持数据库类型: " + dialect);
+
+    }
+
     @PostMapping("/gen")
     public synchronized ResponseResult gen(@RequestBody DatabaseGenVo vo) throws Exception {
 
         String zipName = PREFIX_ZIP + LocalDateTime.now().toEpochSecond(ZoneOffset.of("+8"));
         TextUtils.deleteDir(path);
-        for (String ddl : vo.getDdlList()) {
-            if (StringUtils.isBlank(ddl)) {
-                continue;
-            }
-            vo.setDdl(ddl);
-            String capitalTableName = capitalTableName(vo);
 
-            vo.setTableName(capitalTableName);
-            vo.setClassName(capitalTableName);
+        BaseSqlHandler baseSqlHandler = sqlHandler(vo.getDialect());
+        baseSqlHandler.setSql(String.join("", vo.getDdlList()));
+        List<TableInfo> tableInfos = baseSqlHandler.tableInfos();
+        for (TableInfo tableInfo : tableInfos) {
+
+            vo.setRealTableName(tableInfo.getTableName());
+            capitalTableName(vo);
             vo.setFilePath(path);
-            vo.setPrimaryKey(primaryKey(vo.getDdl()));
-            vo.setColumnDefinitionList(columnList(vo.getDdl()).stream().peek(c -> c.setColumnName(removeQuota(c.getColumnName()))).collect(Collectors.toList()));
+            vo.setColumnInfos(tableInfo.getColumnInfos());
 
             new MakeEntity(vo).make();
             new MakeMapper(vo).make();
@@ -83,14 +92,14 @@ public class DatabaseGenController {
         return ok(vo);
     }
 
-    private String capitalTableName(DatabaseGenVo vo) throws JSQLParserException {
-        String tableName = tableName(vo.getDdl());
-
-        vo.setRealTableName(tableName);
+    private void capitalTableName(DatabaseGenVo vo) {
+        String realTableName = vo.getRealTableName();
         if (StringUtils.isNotBlank(vo.getPrefix())) {
-            tableName = tableName.replaceFirst(vo.getPrefix(), "");
+            realTableName = realTableName.replaceFirst(vo.getPrefix(), "");
         }
-        return capitalName(tableName);
+        String capitalName = capitalName(realTableName);
+        vo.setTableName(capitalName);
+        vo.setClassName(capitalName);
     }
 
     @PostMapping(value = "/download")
@@ -100,22 +109,12 @@ public class DatabaseGenController {
 
 
     @PostMapping("/info")
-    public synchronized ResponseResult sql(@RequestParam("file") MultipartFile multipartFile) throws IOException {
+    public synchronized ResponseResult sql(@RequestParam("file") MultipartFile multipartFile, String dialect) throws IOException {
 
-        List<TableInfo> tableInfos = new ArrayList<>();
-        List<String> tableDdls = tableDdl(TextUtils.read(multipartFile.getInputStream()));
-
-        for (String ddl : tableDdls) {
-            List<ColumnInfo> columnInfos = DatabaseHelper.columnList(ddl).stream().map(col -> ColumnInfo.builder()
-                    .name(removeQuota(col.getColumnName()))
-                    .type(col.getColDataType().getDataType())
-                    .length(columnLength(col))
-                    .comment(comment(col))
-                    .other(String.join(" ", other(col)))
-                    .build()).collect(Collectors.toList());
-            tableInfos.add(TableInfo.builder().tableName(tableName(ddl)).columnInfos(columnInfos).indexInfos(indexList(ddl)).build());
-        }
-        return ok(tableInfos);
+        BaseSqlHandler sqlHandler = sqlHandler(dialect);
+        String tableSql = sqlHandler.tableSql(TextUtils.read(multipartFile.getInputStream()));
+        sqlHandler.setSql(tableSql);
+        return ok(sqlHandler.tableInfos());
 
     }
 

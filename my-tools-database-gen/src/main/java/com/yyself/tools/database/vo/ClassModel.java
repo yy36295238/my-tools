@@ -25,11 +25,4 @@ public class ClassModel {
     private JavaFile javaFile;
     private List<ClassModel> classModelList;
 
-    public ClassModel(String className, String classInfo, String lang) {
-        this.className = className;
-        this.classInfo = classInfo;
-        this.lang = lang;
-    }
-
-
 }

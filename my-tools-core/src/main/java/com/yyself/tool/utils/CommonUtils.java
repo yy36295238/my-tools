@@ -1,12 +1,42 @@
 package com.yyself.tool.utils;
 
+import com.yyself.tool.exception.KotException;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+
 import java.math.BigDecimal;
 import java.util.Date;
 
 /**
  * @author YangYu
  */
+
+@Slf4j
 public class CommonUtils {
+
+
+    /**
+     * 删除两个字符串中间的字符串
+     */
+    public static String removeStr(String origin, String startStr, String endStr) {
+        int start = origin.indexOf(startStr);
+        int end = origin.indexOf(endStr);
+        if (start < 0 || end < 0) {
+            log.warn("未匹配关键字,origin={},startStr={},endStr={}", origin, startStr, endStr);
+            return origin;
+        }
+        return origin.substring(0, start + startStr.length()) + origin.substring(end, origin.length());
+    }
+
+    /**
+     * 获取字符串最后一个字符
+     */
+    public static String lastStr(String str) {
+        if (StringUtils.isBlank(str)) {
+            return str;
+        }
+        return str.substring(str.length() - 1);
+    }
 
     /**
      * 下划线转驼峰
@@ -64,27 +94,27 @@ public class CommonUtils {
         if ("DATE".equals(type) || "DATETIME".equals(type) || "TIMESTAMP".equals(type) || type.contains("TIMESTAMP")) {
             return Date.class;
         }
-        if ("TINYINT".equals(type) || "SMALLINT".equals(type) || "INT".equals(type) || "INT4".equals(type) || "SMALLINT UNSIGNED".equals(type)) {
+        if (type.contains("INT") && !type.equals("INT8")) {
             return Integer.class;
         }
-        if ("BIGINT".equals(type) || "BIGINT UNSIGNED".equals(type) || "INT8".equals(type)) {
+        if (type.contains("BIGINT") || "INT8".equals(type)) {
             return Long.class;
         }
-        if ("FLOAT".equals(type)) {
+        if (type.contains("FLOAT") && !type.equals("FLOAT8")) {
             return Float.class;
         }
-        if ("DOUBLE".equals(type)) {
+        if (type.contains("DOUBLE") || type.equals("FLOAT8") || type.equals("MONEY")) {
             return Double.class;
         }
         if ("DECIMAL".equals(type) || "NUMERIC".equals(type)) {
             return BigDecimal.class;
         }
-        if ("BIT".equals(type) || "BOOLEAN".equals(type)) {
+        if ("BIT".equals(type) || "BOOLEAN".equals(type) || "BOOL".equals(type)) {
             return Boolean.class;
         }
-        if ("CHAR".equals(type) || "VARCHAR".equals(type) || "TEXT".equals(type) || type.contains("CHARACTER")) {
+        if (type.contains("CHAR") || type.contains("TEXT")) {
             return String.class;
         }
-        throw new RuntimeException("未知数据类型 = " + type);
+        throw new KotException("未知数据类型 = " + type);
     }
 }

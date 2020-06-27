@@ -7,20 +7,18 @@ import lombok.NoArgsConstructor;
 
 /**
  * @author yangyu
- * @date 2020/6/5 下午8:06
+ * @date 2020/6/25 下午10:48
  */
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ColumnInfo {
-    private String name;
+public class CommentInfo {
+    private String tableName;
+    private String columnName;
     private String type;
-    private String length;
     private String comment;
-    private String other;
-    private String defaultVal;
-    private boolean notNull;
-    private boolean pk;
+
+
 }

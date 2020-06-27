@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import net.sf.jsqlparser.statement.create.table.ColumnDefinition;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -20,6 +19,7 @@ import java.util.Map;
 @NoArgsConstructor
 @Builder
 public class DatabaseGenVo {
+    private String dialect;
     private String realTableName;
     private String tableName;
     private String className;
@@ -27,9 +27,8 @@ public class DatabaseGenVo {
     private String packages;
     private String prefix;
     private String filePath;
-    private String primaryKey;
     private boolean enableSwagger = true;
-    List<ColumnDefinition> columnDefinitionList;
+    List<ColumnInfo> columnInfos;
     private List<ClassModel> classInfoList = new LinkedList<>();
     Map<String, List<ClassModel>> classModelMap;
     private String ddl;

@@ -19,6 +19,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseResult exceptionHandler(Exception ex) {
         log.error("system error: ", ex);
-        return ResponseResult.err(ResultEnum.SYS_ERR);
+        return ResponseResult.err(ResultEnum.SYS_ERR, ex.getMessage());
     }
 }

@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.yyself.tool.utils.CommonUtils.lowerName;
-import static com.yyself.tools.database.DatabaseHelper.comment;
 
 
 /**
@@ -24,7 +23,7 @@ public class MakeVue {
 
     public static void makeVue(DatabaseGenVo vo) {
 
-        List<ColumnInfo> columnInfoList = vo.getColumnDefinitionList().stream().map(c -> ColumnInfo.builder().name(CommonUtils.camelCaseName(c.getColumnName().toLowerCase())).comment(StringUtils.isBlank(comment(c)) ? c.getColumnName() : comment(c)).build()).collect(Collectors.toList());
+        List<ColumnInfo> columnInfoList = vo.getColumnInfos().stream().map(c -> ColumnInfo.builder().name(CommonUtils.camelCaseName(c.getName().toLowerCase())).comment(StringUtils.isBlank(c.getComment()) ? c.getName() : c.getComment()).build()).collect(Collectors.toList());
 
         String userDir = TextUtils.userDir().replace("target", "").replace("my-tools-web", "");
 

@@ -12,4 +12,8 @@ public class KotException extends RuntimeException {
     public KotException(Throwable cause) {
         super(cause);
     }
+
+    public KotException(String message) {
+        super(message);
+    }
 }

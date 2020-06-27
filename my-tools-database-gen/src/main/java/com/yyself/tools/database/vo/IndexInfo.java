@@ -16,9 +16,11 @@ import lombok.NoArgsConstructor;
 @Builder
 public class IndexInfo {
 
+    private String tableName;
     private String key;
     private String type;
     private String using;
-    private String content;
+    private String indexes;
+    private String comment;
 
 }

@@ -15,7 +15,6 @@ import lombok.NoArgsConstructor;
 
 import javax.lang.model.element.Modifier;
 
-import static com.yyself.tools.database.DatabaseHelper.comment;
 
 
 /**
@@ -34,17 +33,17 @@ public class MakeEntity extends AbstractMake {
 
         TypeSpec.Builder classBuilder = TypeSpec.classBuilder(vo.getClassName());
 
-        vo.getColumnDefinitionList().forEach(c -> {
-            String columnName = c.getColumnName();
-            String dataType = c.getColDataType().getDataType();
-            String comment = comment(c);
-            boolean isPk = c.getColumnName().equals(vo.getPrimaryKey());
+        vo.getColumnInfos().forEach(c -> {
+            String columnName = c.getName();
+            String dataType = c.getType();
+            String comment = c.getComment();
+            boolean isPk = c.isPk();
             final FieldSpec.Builder fieldBuilder = FieldSpec.builder(CommonUtils.changeType(dataType), CommonUtils.camelCaseName(columnName.toLowerCase()), Modifier.PRIVATE)
                     .addJavadoc(comment + "\n");
 
             if (vo.isEnableSwagger()) {
                 fieldBuilder.addAnnotation(AnnotationSpec.builder(ApiModelProperty.class)
-                        .addMember("value", "$S", comment(c))
+                        .addMember("value", "$S", comment)
                         .addMember("dataType", "$S", CommonUtils.changeType(dataType).getSimpleName())
                         .addMember("name", "$S", CommonUtils.camelCaseName(columnName.toLowerCase()))
                         .build());
