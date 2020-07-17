@@ -20,6 +20,12 @@ import static com.yyself.tool.utils.CommonUtils.lowerName;
 
 public class MakeVue {
 
+    private static final String ADD_FORM_DATA_KEY = "_addFormData_";
+    private static final String FORM_DATA_JSON = "_formDataJson_";
+    private static final String COLUMNS_DATA_JSON = "_columnsDataJson_";
+    private static final String API = "_api_";
+    private static final String INIT_FORM = "_initForm_";
+
 
     public static void makeVue(DatabaseGenVo vo) {
 
@@ -33,16 +39,12 @@ public class MakeVue {
         String content = vueContent.replaceAll(ADD_FORM_DATA_KEY, addFormTemplate(columnInfoList))
                 .replaceAll(FORM_DATA_JSON, formDataJson(columnInfoList))
                 .replaceAll(COLUMNS_DATA_JSON, columnsDataJson(columnInfoList))
-                .replaceAll(API, "/api/v1/" + lowerName(vo.getTableName()));
-        vo.getClassInfoList().add(ClassModel.builder().tableName(vo.getTableName()).className(vo.getClassName() + "Vue").classInfo(content).lang("vue").build());
+                .replaceAll(API, "/api/v1/" + lowerName(vo.getTableName()))
+                .replaceAll(INIT_FORM, initForm(columnInfoList));
+
+        vo.getClassInfoList().add(ClassModel.builder().tableName(vo.getTableName()).className(vo.getClassName() + ".vue").classInfo(content).lang("vue").build());
         TextUtils.write(genDemo, content);
     }
-
-
-    private static final String ADD_FORM_DATA_KEY = "_addFormData_";
-    private static final String FORM_DATA_JSON = "_formDataJson_";
-    private static final String COLUMNS_DATA_JSON = "_columnsDataJson_";
-    private static final String API = "_api_";
 
 
     /**
@@ -109,11 +111,12 @@ public class MakeVue {
      * },
      */
     private static String formDataJson(List<ColumnInfo> columns) {
-        StringBuilder sb = new StringBuilder("formData: {\n");
+        StringBuilder sb = new StringBuilder();
+        sb.append(space(2)).append("formData: {\n");
         for (ColumnInfo column : columns) {
-            sb.append(space(4)).append(column.getName()).append(": ").append("undefined").append(",\n");
+            sb.append(space(3)).append(column.getName()).append(": ").append("undefined").append(",\n");
         }
-        sb.append(space(3)).append("},");
+        sb.append(space(2)).append("},");
         return sb.toString();
     }
 
@@ -132,13 +135,44 @@ public class MakeVue {
         StringBuilder builder = new StringBuilder();
         for (ColumnInfo column : columns) {
             StringBuilder sb = new StringBuilder();
-            sb.append(space(4)).append("{\n");
-            sb.append(space(5)).append("title").append(": ").append("\"").append(column.getComment()).append("\"").append(",\n");
-            sb.append(space(5)).append("key").append(": ").append("\"").append(column.getName()).append("\"").append(",\n");
-            sb.append(space(4)).append("},\n");
+            sb.append(space(2)).append("{\n");
+            sb.append(space(3)).append("title").append(": ").append("\"").append(column.getComment()).append("\"").append(",\n");
+            sb.append(space(3)).append("key").append(": ").append("\"").append(column.getName()).append("\"").append(",\n");
+            sb.append(space(2)).append("},\n");
             builder.append(sb.toString());
         }
         return builder.toString();
+    }
+
+    /**
+     * if (row) {
+     * this.formData.id = row.id;
+     * this.formData.className = row.className;
+     * this.formData.revert = row.revert;
+     * } else {
+     * this.formData.className = undefined;
+     * this.formData.revert = undefined;
+     * }
+     */
+
+    public static String initForm(List<ColumnInfo> columns) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(space(2)).append("if (row) {\n");
+        for (ColumnInfo column : columns) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(space(3)).append("this.formData.").append(column.getName()).append(" = row.").append(column.getName()).append(";\n");
+            builder.append(sb.toString());
+        }
+        builder.append(space(2)).append("} else {\n");
+        for (ColumnInfo column : columns) {
+            if (column.isPk()) {
+                continue;
+            }
+            StringBuilder sb = new StringBuilder();
+            sb.append(space(3)).append("this.formData.").append(column.getName()).append(" = undefined").append(";\n");;
+            builder.append(sb.toString());
+        }
+        return builder.append(space(2)).append("}\n").toString();
     }
 
     private static String space(int count) {

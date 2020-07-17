@@ -54,7 +54,7 @@ export default {
     },
     data() {
         return {
-            url: "http://localhost:6161",
+            url: "http://localhost:8080",
             addShow: false,
             styles: {
                 height: 'calc(100% - 55px)',
@@ -62,7 +62,7 @@ export default {
                 paddingBottom: '53px',
                 position: 'static'
             },
-            _formDataJson_
+_formDataJson_
             columns: this.columnsData(),
             data: [],
         };
@@ -77,14 +77,7 @@ export default {
             });
         },
         showAdd(row) {
-            if (row) {
-                this.formData.id = row.id;
-                this.formData.className = row.className;
-                this.formData.revert = row.revert;
-            } else {
-                this.formData.className = undefined;
-                this.formData.revert = undefined;
-            }
+_initForm_
             this.addShow = true;
         },
         handleSave() {
@@ -92,8 +85,8 @@ export default {
             this.formData.appId = this.appId;
             this.basePostRequest(this.url + uri, this.formData);
         },
-        handleDelete(id) {
-            this.basePostRequest(this.url + "_api_/deleteById", { id, id });
+        handleDelete(row) {
+            this.basePostRequest(this.url + "_api_/deleteById", { id, row.id });
         },
         basePostRequest(url, data) {
             this.axios.post(url, data).then(res => {
@@ -149,7 +142,7 @@ export default {
                                 },
                                 on: {
                                     click: () => {
-                                        this.handleDelete(params.row.id);
+                                        this.handleDelete(params.row);
                                     }
                                 }
                             }),]),
@@ -157,7 +150,7 @@ export default {
                     },
                     width: 200
                 },
-                _columnsDataJson_
+_columnsDataJson_
             ]
         }
     }

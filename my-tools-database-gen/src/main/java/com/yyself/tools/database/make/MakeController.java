@@ -9,10 +9,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.lang.model.element.Modifier;
 
@@ -149,7 +146,7 @@ public class MakeController extends AbstractMake {
                 .addAnnotation(AnnotationSpec.builder(PostMapping.class)
                         .addMember("value", "$S", "/updateById").build())
                 .addModifiers(Modifier.PUBLIC)
-                .addParameter(entity, lowerName(tableName))
+                .addParameter(ParameterSpec.builder(entity, lowerName(tableName)).addAnnotation(RequestBody.class).build())
                 .returns(ResponseResult.class)
                 .addStatement("return ResponseResult.ok(" + serviceName + ".newUpdate().updateById(" + lowerName(tableName) + "))")
                 .build();
@@ -166,11 +163,12 @@ public class MakeController extends AbstractMake {
                     .addMember("required", "$L", "true")
                     .build());
         }
+
         return builder
                 .addAnnotation(AnnotationSpec.builder(PostMapping.class)
                         .addMember("value", "$S", "/deleteById").build())
                 .addModifiers(Modifier.PUBLIC)
-                .addParameter(entity, lowerName(tableName))
+                .addParameter(ParameterSpec.builder(entity, lowerName(tableName)).addAnnotation(RequestBody.class).build())
                 .returns(ResponseResult.class)
                 .addStatement("return ResponseResult.ok(" + serviceName + ".newUpdate().delete(" + lowerName(tableName) + "))")
                 .build();
