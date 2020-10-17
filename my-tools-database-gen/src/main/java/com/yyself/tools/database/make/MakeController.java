@@ -45,7 +45,7 @@ public class MakeController extends AbstractMake {
                 .addModifiers(Modifier.PUBLIC)
                 .addJavadoc("@author " + vo.getAuthor() + "\n")
                 .addAnnotation(RestController.class)
-                .addAnnotation(AnnotationSpec.builder(RequestMapping.class).addMember("value", "$S", "/api/v1/" + lowerName(vo.getTableName())).build())
+                .addAnnotation(AnnotationSpec.builder(RequestMapping.class).addMember("value", "$S", "/api/" + lowerName(vo.getTableName())).build())
                 .addModifiers(Modifier.PUBLIC)
                 .addField(controllerField)
                 // 新增
@@ -67,7 +67,7 @@ public class MakeController extends AbstractMake {
     }
 
     private MethodSpec add(ClassName entity, String tableName, String serviceName) {
-        MethodSpec.Builder builder = MethodSpec.methodBuilder("add");
+        MethodSpec.Builder builder = MethodSpec.methodBuilder("v1/add");
         if (vo.isEnableSwagger()) {
             builder.addAnnotation(AnnotationSpec.builder(ApiOperation.class)
                     .addMember("value", "$S", "/新增").build());
@@ -81,7 +81,7 @@ public class MakeController extends AbstractMake {
     }
 
     private MethodSpec list(ClassName entity, String tableName, String serviceName) {
-        MethodSpec.Builder builder = MethodSpec.methodBuilder("list");
+        MethodSpec.Builder builder = MethodSpec.methodBuilder("v1/list");
         if (vo.isEnableSwagger()) {
             builder.addAnnotation(AnnotationSpec.builder(ApiOperation.class)
                     .addMember("value", "$S", "/列表").build());
@@ -96,7 +96,7 @@ public class MakeController extends AbstractMake {
 
     private MethodSpec page(ClassName entity, String tableName, String serviceName) {
         ClassName page = ClassName.get("kot.bootstarter.kotmybatis.common", "Page");
-        MethodSpec.Builder builder = MethodSpec.methodBuilder("page");
+        MethodSpec.Builder builder = MethodSpec.methodBuilder("v1/page");
         if (vo.isEnableSwagger()) {
             builder.addAnnotation(AnnotationSpec.builder(ApiOperation.class)
                     .addMember("value", "$S", "/分页").build());
@@ -111,7 +111,7 @@ public class MakeController extends AbstractMake {
     }
 
     private MethodSpec id(ClassName entity, String tableName, String serviceName) {
-        MethodSpec.Builder builder = MethodSpec.methodBuilder("findById");
+        MethodSpec.Builder builder = MethodSpec.methodBuilder("v1/findById");
         if (vo.isEnableSwagger()) {
             builder.addAnnotation(AnnotationSpec.builder(ApiOperation.class)
                     .addMember("value", "$S", "/根据id查询").build());
@@ -132,7 +132,7 @@ public class MakeController extends AbstractMake {
     }
 
     private MethodSpec updateById(ClassName entity, String tableName, String serviceName) {
-        MethodSpec.Builder builder = MethodSpec.methodBuilder("updateById");
+        MethodSpec.Builder builder = MethodSpec.methodBuilder("v1/updateById");
         if (vo.isEnableSwagger()) {
             builder.addAnnotation(AnnotationSpec.builder(ApiOperation.class)
                     .addMember("value", "$S", "/根据id更新").build());
@@ -153,7 +153,7 @@ public class MakeController extends AbstractMake {
     }
 
     private MethodSpec deleteById(ClassName entity, String tableName, String serviceName) {
-        MethodSpec.Builder builder = MethodSpec.methodBuilder("deleteById");
+        MethodSpec.Builder builder = MethodSpec.methodBuilder("v1/deleteById");
         if (vo.isEnableSwagger()) {
             builder.addAnnotation(AnnotationSpec.builder(ApiOperation.class)
                     .addMember("value", "$S", "/根据id删除").build());
